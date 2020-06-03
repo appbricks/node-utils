@@ -1,5 +1,4 @@
 import { LOG_LEVEL_TRACE, LOG_LEVEL_DEBUG, LOG_LEVEL_INFO, LOG_LEVEL_WARN, setLogLevel } from '../logger';
-
 import Logger from '../logger';
 
 /* eslint @typescript-eslint/no-explicit-any: 0 */

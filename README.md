@@ -7,7 +7,7 @@ This module contains common utility functions. Most notably it contains a consol
 To install run:
 
 ```
-npm install @appbricks/identity
+npm install @appbricks/node-utils
 ```
 
 ## Usage

@@ -19,13 +19,12 @@ export const NOOP = 'NOOP';
  * Common redux action base type with payload
  * and meta fields.
  */
-export interface Action extends redux.Action<string> {
-  payload: object,
+export interface Action<T> extends redux.Action<string> {
+  payload?: T,
   meta: {
     timestamp: number,
     intentTag?: string,
-    relatedAction?: Action
-    errorPayload?: ErrorPayload
+    relatedAction?: Action<any>
   }
 };
 
@@ -47,12 +46,12 @@ export interface ErrorPayload {
  * @param payload    the payload the action is associated with
  * @param intentTag  a unique intent tag
  */
-export function createAction<A extends Action>(
+export function createAction<T>(
   type: string, 
-  payload: object = {}, 
-  intentTag?: string): A {
+  payload?: T, 
+  intentTag?: string): Action<T> {
 
-  let action = <A>{
+  let action: Action<T> = {
     type,
     payload,
     meta: {
@@ -79,13 +78,13 @@ export function createAction<A extends Action>(
  * @param payload        the payload the action is associated with
  * @param intentTag      a unique intent tag
  */
-export function createFollowUpAction<A extends Action>(
-  relatedAction: A, 
+export function createFollowUpAction<T>(
+  relatedAction: Action<T>, 
   type: string, 
-  payload: object = {}, 
-  intentTag?: string): Action {
+  payload?: T, 
+  intentTag?: string): Action<T> {
 
-  let action = <Action>{
+  let action: Action<T> = {
     type,
     payload,
     meta: {
@@ -103,24 +102,25 @@ export function createFollowUpAction<A extends Action>(
  * Creates a ERROR action with error details
  * and related action that had the error.
  * 
- * @param relatedAction  the action that resulted in this action
  * @param err            the error instance
+ * @param relatedAction  the action that resulted in this action
  * @param message        a detailed error message
  */
-export function createErrorAction<A extends Action>(
-  relatedAction: A | undefined, 
+export function createErrorAction(
   err: Error | any,
-  message?: string): Action {
+  relatedAction?: Action<any>,
+  message?: string
+): Action<ErrorPayload> {
 
-  let action = <Action>{
+  let action: Action<ErrorPayload> = {
     type: ERROR,
+    payload: {
+      err: err instanceof Error ? err : new Error(err),
+      message: message ? message : err.toString(),
+    },
     meta: {
       timestamp: Date.now(),
-      relatedAction,
-      errorPayload: {
-        err: err instanceof Error ? err : new Error(err),
-        message: message ? message : err.toString(),
-      }
+      relatedAction
     }
   };
 
@@ -137,18 +137,18 @@ export function createErrorAction<A extends Action>(
  * @param type            the request action type
  * @param serviceApiCall  the service API invocation callback
  */
-export function serviceEpic<A extends Action, S extends State>(
+export function serviceEpic<T, S extends State>(
   type: string, 
-  serviceApiCall: (action: A, state: StateObservable<S>) => Promise<Action>
+  serviceApiCall: (action: Action<T>, state: StateObservable<S>) => Promise<Action<T>>
 ): Epic {
 
-  return (action$: ActionsObservable<A>, state$: StateObservable<S>) => action$.pipe(
+  return (action$: ActionsObservable<Action<T>>, state$: StateObservable<S>) => action$.pipe(
     ofType(type),
     mergeMap(async action => {
       try {
         return await serviceApiCall(action, state$);
       } catch (err) {
-        return createErrorAction(action, err);
+        return createErrorAction(err, action);
       }
     })
   );
@@ -161,29 +161,29 @@ export function serviceEpic<A extends Action, S extends State>(
  * @param type             the request action type
  * @param serviceApiCalls  list of service API invocation callbacks
  */
-export function serviceEpicFanOut<A extends Action, S extends State>(
+export function serviceEpicFanOut<T, S extends State>(
   type: string, 
   serviceApiCallMap: {
     [name: string]: (
-      action: A, 
+      action: Action<T>, 
       state: StateObservable<S>, 
       // executed service API call promises that can be waited on
-      callSync: { [name: string]: Promise<Action> }
-    ) => Promise<Action>
+      callSync: { [name: string]: Promise<Action<T | ErrorPayload>> }
+    ) => Promise<Action<T | ErrorPayload>>
   }
 ): Epic {
 
   // save action in flight for inclusion
   // with error handling
-  var actionInFlight: Action;
+  var actionInFlight: Action<T>;
 
   return (action$, state$) => action$.pipe(
     ofType(type),
     mergeMap(action => {
       actionInFlight = action; 
 
-      let callQueue: Promise<Action>[] = [];
-      let callSync: { [name: string]: Promise<Action> } = {};
+      let callQueue: Promise<Action<T | ErrorPayload>>[] = [];
+      let callSync: { [name: string]: Promise<Action<T | ErrorPayload>> } = {};
       
       for (let name in serviceApiCallMap) {
         let serviceApiCall = serviceApiCallMap[name];
@@ -195,7 +195,7 @@ export function serviceEpicFanOut<A extends Action, S extends State>(
       return concat(...callQueue.map(p => from(p)));
     }),
     catchError(err => 
-      of(createErrorAction(actionInFlight, err))
+      of(createErrorAction(err, actionInFlight))
     )
   );
 }

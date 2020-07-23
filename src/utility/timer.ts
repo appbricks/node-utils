@@ -21,7 +21,7 @@ const emptyPromise = new Promise(() => {});
  * @param delay  time to sleep
  */
 export function sleep(delay: number): Promise<any> {
-  return new Promise((resolve) => setTimeout(resolve, delay));
+  return new Promise(resolve => setTimeout(resolve, delay));
 }
 
 /**
@@ -33,8 +33,8 @@ export function sleep(delay: number): Promise<any> {
  * @param {() => any} cb      the callback function which returns true or false
  * @param {number}    delay   the delay in milliseconds to wait before triggering
  * @param {boolean}   repeat  if true then timer will reset and callback will be
- *                                called again after the given delay. if the callback
- *                                returns false then the cycle will be interrupted.
+ *                            called again after the given delay. if the callback
+ *                            returns false then the cycle will be interrupted.
  */
 export function execAfter(
   cb: () => any,

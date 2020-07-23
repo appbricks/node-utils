@@ -59,7 +59,7 @@ function timeStamp() {
 }
 
 export default class Logger {
-  name: string;
+  private name: string;
 
   /**
    * Construct a logger instance.

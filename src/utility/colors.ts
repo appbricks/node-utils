@@ -1,7 +1,3 @@
-/*
- * Copyright 2018-2018 AppBricks, Inc. or its affiliates. All Rights Reserved.
- */
-
 /**
  * Returns a hex color as 'rgb()' string with
  * a transparency value if provided.

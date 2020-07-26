@@ -1,7 +1,3 @@
-/*
- * Copyright 2018-2018 AppBricks, Inc. or its affiliates. All Rights Reserved.
- */
-
 /* eslint @typescript-eslint/no-explicit-any: 0 */
 /* eslint @typescript-eslint/explicit-module-boundary-types: 0 */
 

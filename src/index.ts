@@ -51,6 +51,9 @@ export {
   State
 };
 
+import Error from './utility/error';
+export { Error };
+
 import { sleep, execAfter } from './utility/timer';
 export { sleep, execAfter };
 

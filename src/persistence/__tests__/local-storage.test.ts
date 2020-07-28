@@ -1,7 +1,7 @@
 import equal from 'fast-deep-equal';
 
 import { setLogLevel, LOG_LEVEL_TRACE } from '../../log/logger';
-import LocalStorage, { NotificationType, Storage, setLocalStorageImpl } from '../loca-storage';
+import LocalStorage, { NotificationType, setLocalStorageImpl } from '../local-storage';
 
 // set trace log level
 if (process.env.DEBUG) {

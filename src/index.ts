@@ -51,6 +51,12 @@ export {
   State
 };
 
+import LocalStorage, {
+  Storage,
+  setLocalStorageImpl
+} from './persistence/local-storage';
+export { LocalStorage, Storage, setLocalStorageImpl };
+
 import Error from './utility/error';
 export { Error };
 

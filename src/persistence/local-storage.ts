@@ -161,14 +161,14 @@ export default class LocalStorage {
    * @param {any} value   the value to set
    * @returns {any}       the previous value if any
    */
-  async setItem(key: string, value: any): Promise<any> {
+  setItem(key: string, value: any): Promise<any> {
     var oldValue = this.data![key]
     if (equal(oldValue, value)) {
       this._sendNotifications(key, value, NotificationType.Unchanged);
     } else {
       this.data![key] = value;
       this._sendNotifications(key, value, !oldValue ? NotificationType.Added : NotificationType.Modified);
-      await this._persist();
+      this._persist();
     }
     return oldValue;
   }
@@ -203,7 +203,7 @@ export default class LocalStorage {
   /**
    * Clears the app local storage
    */
-  async clear() {
+  clear() {
     for (const key in this.data!) {
       this._sendNotifications(key, this.data![key], NotificationType.Removed);
     }

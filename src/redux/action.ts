@@ -78,13 +78,13 @@ export function createAction<T>(
  * @param payload        the payload the action is associated with
  * @param intentTag      a unique intent tag
  */
-export function createFollowUpAction<T>(
-  relatedAction: Action<T>, 
+export function createFollowUpAction<T1, T2 = any>(
+  relatedAction: Action<T2>, 
   type: string, 
-  payload?: T, 
-  intentTag?: string): Action<T> {
+  payload?: T1, 
+  intentTag?: string): Action<T1> {
 
-  let action: Action<T> = {
+  let action: Action<T1> = {
     type,
     payload,
     meta: {
@@ -139,7 +139,7 @@ export function createErrorAction(
  */
 export function serviceEpic<T, S extends State>(
   type: string, 
-  serviceApiCall: (action: Action<T>, state: StateObservable<S>) => Promise<Action<T>>
+  serviceApiCall: (action: Action<T>, state: StateObservable<S>) => Promise<Action<any>>
 ): Epic {
 
   return (action$: ActionsObservable<Action<T>>, state$: StateObservable<S>) => action$.pipe(

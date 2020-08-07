@@ -27,6 +27,7 @@ import {
   createAction, 
   createFollowUpAction, 
   createErrorAction,
+  setActionStatus,
   serviceEpic,
   serviceEpicFanOut,
   combineEpicsWithGlobalErrorHandler
@@ -41,6 +42,7 @@ export {
   createAction, 
   createFollowUpAction, 
   createErrorAction,
+  setActionStatus,
   serviceEpic,
   serviceEpicFanOut,
   combineEpicsWithGlobalErrorHandler

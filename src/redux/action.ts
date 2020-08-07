@@ -43,16 +43,18 @@ export interface ErrorPayload {
  * Status and/or result of an action execution
  */
 export interface ActionStatus<P = any> {
-
+  action: Action<P>
   result: ActionResult
-  action?: Action<P>
-
-  data?: { [ key: string ]: any }
 
   alert?: {
     shortMessage: string
     longMessage?: string
   }
+
+  // any data from the execution of the last action.
+  // this data will only last within the state until 
+  // the next action is dispatched.
+  data?: { [ key: string ]: any }  
 }
 
 export enum ActionResult {
@@ -161,6 +163,48 @@ export function createErrorAction(
 }
 
 /**
+ * Sets the action status in the given state
+ * instance. This function will also execute
+ * the action hook if available.
+ * 
+ * @param state   the state to save the status in
+ * @param result  the action result
+ * @param action  the action that caused the state change
+ * @param alert   alerts resulting from the execution of the action
+ * @param data    transient action data
+ */
+export function setActionStatus<S extends State>(
+  state: S, 
+  action: Action,
+  result: ActionResult,
+  alert?: {
+    shortMessage: string
+    longMessage?: string
+  },
+  data?: { [ key: string ]: any }
+): S {
+
+  const actionStatus = <ActionStatus>{
+    action,
+    result,
+    alert,
+    data
+  }
+  if (action.meta.relatedAction && action.meta.relatedAction.meta.statusHook) {
+    Logger.trace('setActionStatus', 'Calling status hook for action ', action.meta.relatedAction.type);
+    action.meta.relatedAction.meta.statusHook(actionStatus, state);
+  }
+  if (action.meta.statusHook) {
+    Logger.trace('setActionStatus', 'Calling status hook for action ', action.type);
+    action.meta.statusHook(actionStatus, state);
+  }
+  return {
+    ...state,
+    actionStatus
+  }
+}
+
+/**
  * Returns a Epic to map an action of 
  * a given type to a service callback.
  * 
@@ -198,8 +242,8 @@ export function serviceEpicFanOut<P, S>(
       action: Action<P>, 
       state: StateObservable<S>, 
       // executed service API call promises that can be waited on
-      callSync: { [name: string]: Promise<Action<P | ErrorPayload>> }
-    ) => Promise<Action<P | ErrorPayload>>
+      callSync: { [name: string]: Promise<Action> }
+    ) => Promise<Action>
   }
 ): Epic {
 
@@ -212,8 +256,8 @@ export function serviceEpicFanOut<P, S>(
     mergeMap(action => {
       actionInFlight = action; 
 
-      let callQueue: Promise<Action<P | ErrorPayload>>[] = [];
-      let callSync: { [name: string]: Promise<Action<P | ErrorPayload>> } = {};
+      let callQueue: Promise<Action>[] = [];
+      let callSync: { [name: string]: Promise<Action> } = {};
       
       for (let name in serviceApiCallMap) {
         let serviceApiCall = serviceApiCallMap[name];

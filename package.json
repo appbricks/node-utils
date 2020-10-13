@@ -1,6 +1,6 @@
 {
   "name": "@appbricks/utils",
-  "version": "0.0.3",
+  "version": "0.0.5",
   "description": "Common utilities",
   "main": "lib/index.js",
   "scripts": {

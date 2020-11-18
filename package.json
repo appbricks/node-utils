@@ -1,6 +1,6 @@
 {
   "name": "@appbricks/utils",
-  "version": "0.0.5",
+  "version": "0.0.4",
   "description": "Common utilities",
   "main": "lib/index.js",
   "scripts": {
@@ -24,21 +24,22 @@
   "homepage": "https://github.com/appbricks/node-utils",
   "dependencies": {
     "react-redux": "^7.2.0",
-    "redux-observable": "^1.2.0"
+    "redux-observable": "^1.2.0",
+    "rxjs": "^6.6.3"
   },
   "devDependencies": {
-    "@types/jest": "^25.2.3",
+    "@types/jest": "^26.0.15",
     "@types/node": "^14.0.6",
     "@types/react-redux": "^7.1.9",
-    "@typescript-eslint/eslint-plugin": "^3.0.2",
-    "@typescript-eslint/parser": "^3.0.2",
+    "@typescript-eslint/eslint-plugin": "^4.8.1",
+    "@typescript-eslint/parser": "^4.8.1",
     "eslint": "^7.1.0",
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-prettier": "^3.1.3",
     "jest": "^26.0.1",
     "prettier": "^2.0.5",
     "ts-jest": "^26.1.0",
-    "typescript": "^3.9.3"
+    "typescript": "^4.0.5"
   },
   "jest": {
     "verbose": true,

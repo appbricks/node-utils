@@ -33,26 +33,32 @@ export default class ExError extends Error {
         super(err);   
 
       } else {
-        const name = Object.getOwnPropertyDescriptor(err, 'name');
-        const stack = Object.getOwnPropertyDescriptor(err, 'stack');
-        const message = Object.getOwnPropertyDescriptor(err, 'message');
+        const errName = Object.getOwnPropertyDescriptor(err, 'name');
+        const errStack = Object.getOwnPropertyDescriptor(err, 'stack');
+        const errMessage = Object.getOwnPropertyDescriptor(err, 'message');
         
-        if (message) {
-          super(message.value);
-          if (!cause && name) {
+        if (errMessage) {
+          super(errMessage.value);
+          if (!cause && errName) {
             this.cause = new Error();
-            this.cause.name = name.value;
-            this.cause.message = message.value;
-            if (stack) {
-              this.cause.stack = stack.value;
+            this.cause.name = errName.value;
+            this.cause.message = errMessage.value;
+            if (errStack) {
+              this.cause.stack = errStack.value;
             }
           }
+        } else if (errName) {
+          super(errName.value);
+        } else {
+          super(name);
         }
       }
 
       if (cause) {
         this.cause = cause;
       }
+    } else {
+      super(name)
     }
     
     // Maintains proper stack trace for where our 

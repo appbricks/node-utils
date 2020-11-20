@@ -46,11 +46,6 @@ export interface ActionStatus<P = any> {
   action: Action<P>
   result: ActionResult
 
-  alert?: {
-    shortMessage: string
-    longMessage?: string
-  }
-
   // any data from the execution of the last action.
   // this data will only last within the state until 
   // the next action is dispatched.
@@ -177,17 +172,12 @@ export function setActionStatus<S extends State>(
   state: S, 
   action: Action,
   result: ActionResult,
-  alert?: {
-    shortMessage: string
-    longMessage?: string
-  },
   data?: { [ key: string ]: any }
 ): S {
 
   const actionStatus = <ActionStatus>{
     action,
     result,
-    alert,
     data
   }
   if (action.meta.relatedAction && action.meta.relatedAction.meta.statusHook) {

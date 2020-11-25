@@ -1,7 +1,13 @@
 import * as redux from 'redux';
 import { Observable, of, from, concat } from 'rxjs';
 import { mergeMap, catchError } from 'rxjs/operators'
-import { Epic, ActionsObservable, StateObservable, ofType, combineEpics } from 'redux-observable';
+import { 
+  Epic, 
+  ActionsObservable, 
+  StateObservable, 
+  ofType, 
+  combineEpics 
+} from 'redux-observable';
 
 import Logger from '../log/logger';
 
@@ -14,6 +20,8 @@ import { State } from './state';
 export const SUCCESS = 'SUCCESS';
 export const ERROR = 'ERROR';
 export const NOOP = 'NOOP';
+
+export const RESET_STATUS = 'RESET_STATUS';
 
 /**
  * Common redux action base type with payload
@@ -29,27 +37,38 @@ export interface Action<P = any> extends redux.Action<string> {
   }
 };
 
-type ActionStatusHook<P = any> = (status: ActionStatus<P>, state: State) => void;
+type ActionStatusHook<P = any> = (
+  status: ActionStatus, 
+  action: Action,
+  state: State
+) => void;
 
 /**
  * Error payload
  */
 export interface ErrorPayload {
   err: Error,
-  message?: string
+  message: string
+};
+
+/**
+ * Reset payload
+ */
+export interface ResetStatusPayload {
+  actionStatus: ActionStatus
 };
 
 /**
  * Status and/or result of an action execution
  */
-export interface ActionStatus<P = any> {
-  action: Action<P>
+export interface ActionStatus {
+  actionType: string
   result: ActionResult
 
   // any data from the execution of the last action.
   // this data will only last within the state until 
   // the next action is dispatched.
-  data?: { [ key: string ]: any }  
+  data: { [ key: string ]: any }  
 }
 
 export enum ActionResult {
@@ -143,7 +162,7 @@ export function createErrorAction(
     type: ERROR,
     payload: {
       err: err instanceof Error ? err : new Error(err),
-      message: message ? message : err.toString(),
+      message: message ? message : err.message || `${err}`
     },
     meta: {
       timestamp: Date.now(),
@@ -154,6 +173,31 @@ export function createErrorAction(
   Logger.trace('createErrorAction', 'Creating error action', action);
   Logger.trace('createErrorAction', 'Related action with error', relatedAction);
   Logger.trace('createErrorAction', 'Error being handled', err);
+  return action;
+}
+
+/**
+ * Creates a RESET action to clear the action
+ * status related to a particular action.
+ * 
+ * @param err            the error instance
+ * @param relatedAction  the action that resulted in this action
+ * @param message        a detailed error message
+ */
+export function createResetStatusAction(
+  actionStatus: ActionStatus
+): Action<ResetStatusPayload> {
+
+  let action: Action<ResetStatusPayload> = {
+    type: RESET_STATUS,
+    payload: {
+      actionStatus,
+    },
+    meta: {
+      timestamp: Date.now(),      
+    }
+  };
+
   return action;
 }
 
@@ -172,25 +216,42 @@ export function setActionStatus<S extends State>(
   state: S, 
   action: Action,
   result: ActionResult,
-  data?: { [ key: string ]: any }
+  data: { [ key: string ]: any } = {}
 ): S {
 
   const actionStatus = <ActionStatus>{
-    action,
+    actionType: action.type,
     result,
     data
   }
   if (action.meta.relatedAction && action.meta.relatedAction.meta.statusHook) {
     Logger.trace('setActionStatus', 'Calling status hook for action ', action.meta.relatedAction.type);
-    action.meta.relatedAction.meta.statusHook(actionStatus, state);
+    action.meta.relatedAction.meta.statusHook(actionStatus, action, state);
   }
   if (action.meta.statusHook) {
     Logger.trace('setActionStatus', 'Calling status hook for action ', action.type);
-    action.meta.statusHook(actionStatus, state);
+    action.meta.statusHook(actionStatus, action, state);
   }
   return {
     ...state,
     actionStatus
+  }
+}
+
+/**
+ * Reset the action status in the given state.
+ * 
+ * @param state   the state to save the status in
+ */
+export function resetActionStatus<S extends State>(
+  state: S, 
+): S {
+
+  return {
+    ...state,
+    actionStatus: {
+      result: ActionResult.none
+    },
   }
 }
 
@@ -282,7 +343,7 @@ export function combineEpicsWithGlobalErrorHandler(
   return (action$: ActionsObservable<any>, state$: StateObservable<any>, dependencies: any): Observable<any> => 
     combineEpics(...epics)(action$, state$, dependencies).pipe(
       catchError((error, source) => {
-        Logger.error('Re-subsribing to the stream as unhandled exception caught from action stream:', error);
+        Logger.error('Re-subscribing to the stream as unhandled exception caught from action stream:', error);
         if (errorHandler) {
           errorHandler(error, source);
         }

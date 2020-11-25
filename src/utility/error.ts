@@ -54,7 +54,7 @@ export default class ExError extends Error {
         }
       }
 
-      if (cause) {
+      if (cause && !this.cause) {
         this.cause = cause;
       }
     } else {
@@ -67,7 +67,7 @@ export default class ExError extends Error {
       Error.captureStackTrace(this, ExError)
     }
 
-    this.name = name;
+    this.name = name;    
   }
 
   toString(): string {

@@ -21,48 +21,60 @@ import {
   SUCCESS, 
   ERROR,
   NOOP,
-  RESET_STATUS,
   Action, 
   ErrorPayload, 
-  ResetStatusPayload,
-  ActionStatus,
-  ActionResult,
   createAction, 
   createFollowUpAction, 
-  createErrorAction,
-  createResetStatusAction,
-  setActionStatus,
-  resetActionStatus,
-  serviceEpic,
-  serviceEpicFanOut,
-  combineEpicsWithGlobalErrorHandler
+  createErrorAction
 } from './redux/action';
 export { 
   SUCCESS, 
   ERROR,
   NOOP,
-  RESET_STATUS,
   Action, 
   ErrorPayload, 
+  createAction, 
+  createFollowUpAction, 
+  createErrorAction
+};
+
+import { 
+  RESET_STATUS,
   ResetStatusPayload,
   ActionStatus,
   ActionResult,
-  createAction, 
-  createFollowUpAction, 
-  createErrorAction,
   createResetStatusAction,
   setActionStatus,
   resetActionStatus,
+} from './redux/status';
+export { 
+  RESET_STATUS,
+  ResetStatusPayload,
+  ActionStatus,
+  ActionResult,
+  createResetStatusAction,
+  setActionStatus,
+  resetActionStatus,
+};
+
+import { 
+  serviceEpic,
+  serviceEpicFanOut,
+  combineEpicsWithGlobalErrorHandler
+} from './redux/service';
+export { 
   serviceEpic,
   serviceEpicFanOut,
   combineEpicsWithGlobalErrorHandler
 };
 
 import {
-  State
+  State,
+  reducerDelegate
 } from './redux/state';
 export {
-  State
+  State,
+  reducerDelegate
 };
 
 import LocalStorage, {
@@ -77,8 +89,11 @@ export { Error };
 import { sleep, execAfter } from './utility/timer';
 export { sleep, execAfter };
 
-import { functionKey } from './utility/functions';
+import { functionKey } from './utility/function';
 export { functionKey };
 
-import { hexToRgba } from './utility/colors';
+import { combineProps } from './utility/object';
+export { combineProps };
+
+import { hexToRgba } from './utility/color';
 export { hexToRgba };

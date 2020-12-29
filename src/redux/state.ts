@@ -22,12 +22,13 @@ export interface State {
 };
 
 /**
+ * Handles common service action types that a 
+ * linked to service specific actions.
  * 
- * 
- * @param state 
- * @param action 
- * @param actionSet 
- * @param delegateReducer 
+ * @param state            the state to reduce
+ * @param action           the action to handle
+ * @param actionSet        set of service specific actions to filter on
+ * @param delegateReducer  the reducer to delegate linked service SUCCESS actions
  */
 export function reducerDelegate<S extends State, P = any>(
   state: S,
@@ -36,7 +37,7 @@ export function reducerDelegate<S extends State, P = any>(
   delegateReducer: Reducer<S, P>,
 ): S {
 
-  const relatedAction = action.meta.relatedAction!;
+  const relatedAction = action.meta && action.meta.relatedAction!;
 
   switch (action.type) {
 
@@ -45,7 +46,7 @@ export function reducerDelegate<S extends State, P = any>(
       // that is within the provided set of actions      
       if (relatedAction && actionSet.has(relatedAction.type)) {
 
-        Logger.error(reducerDelegate.name,
+        Logger.trace(reducerDelegate.name,
           'Handling SUCCESS action for related action:',
           relatedAction.type);
 
@@ -65,7 +66,7 @@ export function reducerDelegate<S extends State, P = any>(
       // that is within the provided set of actions      
       if (relatedAction && actionSet.has(relatedAction.type)) {
 
-        Logger.error(reducerDelegate.name,
+        Logger.trace(reducerDelegate.name,
           'Handling ERROR action for related action:',
           relatedAction.type);
 
@@ -88,7 +89,7 @@ export function reducerDelegate<S extends State, P = any>(
 
       if (actionSet.has(actionStatusMetaType)) {
 
-        Logger.error(reducerDelegate.name,
+        Logger.trace(reducerDelegate.name,
           'Reseting action status for action:',
           actionStatusMetaType);
         

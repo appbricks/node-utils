@@ -130,20 +130,6 @@ export function setActionStatus<S extends State>(
 }
 
 /**
- * Checks if any one of the action statuses 
- * in the state is in pending state
- * 
- * @param state  the state in which to do the status check 
- */
-export function isStatusPending<S extends State>(
-  state: S
-): boolean {
-  return state.status.some(
-    status => status.result == ActionResult.pending
-  );
-}
-
-/**
  * Reset the action status in the given state.
  * 
  * @param state   the state in which the status needs to be reset
@@ -165,4 +151,33 @@ export function resetActionStatus<S extends State>(
     ...state,
     status
   }
+}
+
+/**
+ * Checks if any one of the action statuses 
+ * in the state is in pending state
+ * 
+ * @param state  the state in which to do the status check 
+ */
+export function isStatusPending<S extends State>(
+  state: S
+): boolean {
+  return state.status.some(
+    status => status.result == ActionResult.pending
+  );
+}
+
+export function getLastStatus<S extends State>(
+  state: S
+): ActionStatus {
+  return state.status.reduce(
+    (lastStatus, status) => {
+      if (!lastStatus || 
+        status.timestamp > lastStatus.timestamp) {
+        return status;
+      } else {
+        return lastStatus;
+      }
+    }
+  );
 }

@@ -46,6 +46,8 @@ import {
   createResetStatusAction,
   setActionStatus,
   resetActionStatus,
+  isStatusPending,
+  getLastStatus
 } from './redux/status';
 export { 
   RESET_STATUS,
@@ -55,6 +57,8 @@ export {
   createResetStatusAction,
   setActionStatus,
   resetActionStatus,
+  isStatusPending,
+  getLastStatus
 };
 
 import { 

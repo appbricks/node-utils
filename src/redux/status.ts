@@ -157,13 +157,19 @@ export function resetActionStatus<S extends State>(
  * Checks if any one of the action statuses 
  * in the state is in pending state
  * 
- * @param state  the state in which to do the status check 
+ * @param state        the state in which to do the status check 
+ * @param actionTypes  the action types for which pending state 
+ *                     should be checked. if not provided then 
+ *                     check will be done for any pending state.
  */
 export function isStatusPending<S extends State>(
-  state: S
+  state: S,
+  ...actionTypes: string[]
 ): boolean {
   return state.status.some(
-    status => status.result == ActionResult.pending
+    status => 
+      status.result == ActionResult.pending && 
+      (actionTypes.length == 0 || actionTypes.some(type => status.actionType == type))
   );
 }
 

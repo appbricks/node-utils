@@ -1,13 +1,12 @@
 {
   "name": "@appbricks/utils",
-  "version": "0.0.8",
+  "version": "0.0.10",
   "description": "Common utilities",
   "main": "lib/index.js",
   "scripts": {
     "lint": "eslint . --ext .ts",
     "lint-fix": "eslint . --ext .ts --quiet --fix",
     "build": "tsc",
-    "publish": "tsc && npm publish",
     "test": "jest"
   },
   "repository": {

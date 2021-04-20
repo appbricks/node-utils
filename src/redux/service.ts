@@ -1,3 +1,4 @@
+import * as redux from 'redux';
 import { Observable, of, from, concat } from 'rxjs';
 import { mergeMap, catchError } from 'rxjs/operators'
 import { 
@@ -95,9 +96,9 @@ export function serviceEpicFanOut<P, S>(
 export function combineEpicsWithGlobalErrorHandler(
   epics: Epic[],
   errorHandler?: (error: any, source: any) => void
-): (action$: ActionsObservable<any>, state$: StateObservable<any>, dependencies: any) => Observable<any> {
+): (action$: ActionsObservable<redux.Action>, state$: StateObservable<any>, dependencies: any) => Observable<redux.Action> {
 
-  return (action$: ActionsObservable<any>, state$: StateObservable<any>, dependencies: any): Observable<any> => 
+  return (action$: ActionsObservable<redux.Action>, state$: StateObservable<any>, dependencies: any): Observable<redux.Action> => 
     combineEpics(...epics)(action$, state$, dependencies).pipe(
       catchError((error, source) => {
         

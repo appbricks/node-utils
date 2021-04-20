@@ -1,4 +1,4 @@
-import { functionKey } from '../functions';
+import { functionKey } from '../function';
 
 it('returns a unique key for a function', () => {
   const fn1 = (): string => {

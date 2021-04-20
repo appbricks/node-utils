@@ -10,7 +10,7 @@ it('pauses for 2000 ms', () => {
   // execute test in a promise as sleep will
   // only pause when run with keyward 'await'
   // from and async function
-  return new Promise(async (resolve) => {
+  return new Promise<void>(async (resolve) => {
     // test sleep for 2s
     await sleep(2000);
 
@@ -44,7 +44,7 @@ it('executes a function after 500 ms and validates the response', () => {
 it('executes a function to run after 500 ms but cancels it in 100 ms', () => {
   const startTime = Date.now();
 
-  return new Promise(async (resolve) => {
+  return new Promise<void>(async (resolve) => {
     const t = execAfter(() => {
       fail('function executed');
     }, 500);
@@ -68,7 +68,7 @@ it('executes a function to run after 500 ms but cancels it in 100 ms', () => {
 });
 
 it('executes a function to run every 100 ms and cancels it after 1050 ms', () => {
-  return new Promise(async (resolve) => {
+  return new Promise<void>(async (resolve) => {
     const t = execAfter(
       () => {
         return true;

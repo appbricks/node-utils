@@ -179,7 +179,7 @@ export function getLastStatus<S extends State>(
   return state.status.reduce(
     (lastStatus, status) => {
       if (!lastStatus || 
-        status.timestamp > lastStatus.timestamp) {
+        status.timestamp >= lastStatus.timestamp) {
         return status;
       } else {
         return lastStatus;

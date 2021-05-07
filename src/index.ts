@@ -61,12 +61,13 @@ export {
   getLastStatus
 };
 
-import { 
+import Service, { 
   serviceEpic,
   serviceEpicFanOut,
   combineEpicsWithGlobalErrorHandler
 } from './redux/service';
 export { 
+  Service,
   serviceEpic,
   serviceEpicFanOut,
   combineEpicsWithGlobalErrorHandler

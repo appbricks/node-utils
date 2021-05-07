@@ -14,6 +14,58 @@ import Logger from '../log/logger';
 import { Action, createErrorAction } from './action';
 
 /**
+ * Service Abstraction
+ * 
+ * S  - Reducer state type (the store state property to reduce)
+ * P  - Action Payload type (to apply to the reduce function)
+ * St - Store state type
+ * Sp - Subscribed state props type
+ * Dp - Dispatch function props type
+ */
+export default abstract class Service<S = any, P = any, St = any, Sp = any, Dp = any> {
+  
+  /**
+   * Returns the {mapStateToProps?: (state, ownProps?) => Object}
+   * provided to the react redux connect() function to allow the
+   * wrapper component to subscribe to the store updates. It provides
+   * the state properties subscribed to, which will be mapped to the 
+   * wrapper components properties.
+   * 
+   * https://react-redux.js.org/api/connect#mapstatetoprops-state-ownprops--object
+   * 
+   * @param state     the store state 
+   * @param ownProps  wrapper component's properties
+   */
+  abstract stateProps<C extends Sp>(state: St, ownProps?: C): Sp
+
+  /**
+   * Returns the {mapDispatchToProps?: Function | Object} provided
+   * to the react redux connect() function to add dispatch functions
+   * to the wrapper component.
+   * 
+   * https://react-redux.js.org/api/connect#mapdispatchtoprops-object--dispatch-ownprops--object
+   * 
+   * @param dispatch   the dispatch function for the store
+   * @param ownProps   wrapper component's properties
+   */
+  abstract dispatchProps<C extends Sp>(dispatch: redux.Dispatch<redux.Action>, ownProps?: C): Dp
+
+  /**
+   * RxJS observable interceptors that subscribe to 
+   * dispatched actions and implement side-effects such as
+   * service backend calls.
+   */
+  abstract epics(): Epic[]
+
+  /**
+   * The store reducer function that processes the payload
+   * of the dispatched actions and reduces the store state
+   * property for the service.
+   */
+  abstract reducer(): redux.Reducer<S, Action<P>>
+}
+
+/**
  * Returns a Epic to map an action of 
  * a given type to a service callback.
  * 

@@ -91,14 +91,8 @@ export { LocalStorage, Storage, setLocalStorageImpl };
 import Error from './utility/error';
 export { Error };
 
-import { sleep, execAfter } from './utility/timer';
-export { sleep, execAfter };
-
-import { functionKey } from './utility/function';
-export { functionKey };
-
-import { combineProps } from './utility/object';
-export { combineProps };
-
-import { hexToRgba } from './utility/color';
-export { hexToRgba };
+export { sleep, execAfter } from './utility/timer';
+export { functionKey } from './utility/function';
+export { combineProps } from './utility/object';
+export { hexToRgba } from './utility/color';
+export { bytesToSize } from './utility/format';

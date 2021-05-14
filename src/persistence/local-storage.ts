@@ -28,15 +28,16 @@ export interface Storage {
   getItem(key: string): Promise<string | null | undefined>;
 }
 
-var localStorageImpl : Storage;
 export function setLocalStorageImpl(storage: Storage) {
-  localStorageImpl = storage;
+  LocalStorage.localStorageImpl = storage;
 }
 
 /**
  * Local storage abstraction of a platform specific capability.
  */
 export default class LocalStorage {
+
+  static localStorageImpl: Storage;
 
   private logger: Logger;
   private queue: Promise<string | void>;
@@ -76,7 +77,9 @@ export default class LocalStorage {
     await this.queue;
 
     if (!this.data) {
-      this.queue = localStorageImpl.getItem(this.id)
+      this.logger.trace('Loading data from local storage implementation');
+
+      this.queue = LocalStorage.localStorageImpl.getItem(this.id)
         .then(dataDoc => {
           this.data = dataDoc ? JSON.parse(dataDoc) : {};
 
@@ -140,7 +143,7 @@ export default class LocalStorage {
     await this.queue;
 
     const dataDoc = JSON.stringify(this.data);
-    this.queue = localStorageImpl.setItem(this.id, dataDoc)
+    this.queue = LocalStorage.localStorageImpl.setItem(this.id, dataDoc)
       .then(() => {
         Logger.trace('LocalStorage', 'key "' + this.id + '" saved: ', this.data);
       });

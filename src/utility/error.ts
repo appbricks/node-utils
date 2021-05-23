@@ -5,13 +5,13 @@ import Logger from '../log/logger';
  */
 export default class ExError extends Error {
 
-  private cause?: Error; 
+  private cause?: Error;
 
   /**
    * Constructs and error instance with detailed
    * information including an ability to chain
    * errors.
-   * 
+   *
    * @param name  A name by which to identify this error instance
    * @param err   An error message or Error object
    * @param cause The cause of the error. If 'err' parameter is
@@ -30,13 +30,13 @@ export default class ExError extends Error {
     } else if (err) {
 
       if (typeof err === 'string') {
-        super(err);   
+        super(err);
 
       } else {
         const errName = Object.getOwnPropertyDescriptor(err, 'name');
         const errStack = Object.getOwnPropertyDescriptor(err, 'stack');
         const errMessage = Object.getOwnPropertyDescriptor(err, 'message');
-        
+
         if (errMessage) {
           super(errMessage.value);
           if (!cause && errName) {
@@ -60,14 +60,14 @@ export default class ExError extends Error {
     } else {
       super(name)
     }
-    
-    // Maintains proper stack trace for where our 
+
+    // Maintains proper stack trace for where our
     // error was thrown (only available on V8)
     if (Error.captureStackTrace) {
       Error.captureStackTrace(this, ExError)
     }
 
-    this.name = name;    
+    this.name = name;
   }
 
   toString(): string {

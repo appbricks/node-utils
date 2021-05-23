@@ -7,38 +7,38 @@ import Logger, {
   setLogLevel,
   reduxLogger,
 } from './log/logger';
-export { Logger, 
-  LOG_LEVEL_TRACE, 
-  LOG_LEVEL_DEBUG, 
-  LOG_LEVEL_INFO, 
-  LOG_LEVEL_WARN, 
-  LOG_LEVEL_ERROR, 
-  setLogLevel, 
-  reduxLogger 
+export { Logger,
+  LOG_LEVEL_TRACE,
+  LOG_LEVEL_DEBUG,
+  LOG_LEVEL_INFO,
+  LOG_LEVEL_WARN,
+  LOG_LEVEL_ERROR,
+  setLogLevel,
+  reduxLogger
 };
 
-import { 
-  SUCCESS, 
+import {
+  SUCCESS,
   ERROR,
   NOOP,
-  Action, 
-  ErrorPayload, 
-  createAction, 
-  createFollowUpAction, 
+  Action,
+  ErrorPayload,
+  createAction,
+  createFollowUpAction,
   createErrorAction
 } from './redux/action';
-export { 
-  SUCCESS, 
+export {
+  SUCCESS,
   ERROR,
   NOOP,
-  Action, 
-  ErrorPayload, 
-  createAction, 
-  createFollowUpAction, 
+  Action,
+  ErrorPayload,
+  createAction,
+  createFollowUpAction,
   createErrorAction
 };
 
-import { 
+import {
   RESET_STATUS,
   ResetStatusPayload,
   ActionStatus,
@@ -49,7 +49,7 @@ import {
   isStatusPending,
   getLastStatus
 } from './redux/status';
-export { 
+export {
   RESET_STATUS,
   ResetStatusPayload,
   ActionStatus,
@@ -61,12 +61,12 @@ export {
   getLastStatus
 };
 
-import Service, { 
+import Service, {
   serviceEpic,
   serviceEpicFanOut,
   combineEpicsWithGlobalErrorHandler
 } from './redux/service';
-export { 
+export {
   Service,
   serviceEpic,
   serviceEpicFanOut,

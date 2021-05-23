@@ -1,11 +1,11 @@
 import Logger from '../log/logger';
 
-import { 
-  SUCCESS, 
-  ERROR, 
-  Action 
+import {
+  SUCCESS,
+  ERROR,
+  Action
 } from './action';
-import { 
+import {
   RESET_STATUS,
   ResetStatusPayload,
   ActionStatus,
@@ -22,9 +22,9 @@ export interface State {
 };
 
 /**
- * Handles common service action types that a 
+ * Handles common service action types that a
  * linked to service specific actions.
- * 
+ *
  * @param state            the state to reduce
  * @param action           the action to handle
  * @param actionSet        set of service specific actions to filter on
@@ -41,9 +41,9 @@ export function reducerDelegate<S extends State, P = any>(
 
   switch (action.type) {
 
-    case SUCCESS: { 
+    case SUCCESS: {
       // process actions with a related action type
-      // that is within the provided set of actions      
+      // that is within the provided set of actions
       if (relatedAction && actionSet.has(relatedAction.type)) {
 
         Logger.trace(reducerDelegate.name,
@@ -51,7 +51,7 @@ export function reducerDelegate<S extends State, P = any>(
           relatedAction.type);
 
         return setActionStatus<S>(
-          // delegate to reducer that should handle any SUCCESS 
+          // delegate to reducer that should handle any SUCCESS
           // actions related to the given set of actions
           delegateReducer(state, action),
 
@@ -63,7 +63,7 @@ export function reducerDelegate<S extends State, P = any>(
     }
     case ERROR: {
       // process actions with a related action type
-      // that is within the provided set of actions      
+      // that is within the provided set of actions
       if (relatedAction && actionSet.has(relatedAction.type)) {
 
         Logger.trace(reducerDelegate.name,
@@ -83,7 +83,7 @@ export function reducerDelegate<S extends State, P = any>(
     }
     case RESET_STATUS: {
 
-      const actionStatusMetaType = 
+      const actionStatusMetaType =
         (<ResetStatusPayload>action.payload)
           .actionStatus.actionType;
 
@@ -92,11 +92,11 @@ export function reducerDelegate<S extends State, P = any>(
         Logger.trace(reducerDelegate.name,
           'Reseting action status for action:',
           actionStatusMetaType);
-        
+
         return resetActionStatus<S>(
-          actionStatusMetaType, 
+          actionStatusMetaType,
           state
-        );        
+        );
       }
       break;
     }
@@ -112,7 +112,7 @@ export function reducerDelegate<S extends State, P = any>(
           action,
           ActionResult.pending
         );
-      }    
+      }
     }
   }
   return state;

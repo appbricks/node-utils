@@ -1,7 +1,7 @@
 /**
- * Formats a value given in bytes 
+ * Formats a value given in bytes
  * to human readable short form.
- * 
+ *
  * @param bytes number to format
  * @returns number formated in short form
  */
@@ -10,7 +10,7 @@ export function bytesToSize(bytes: number): string {
     case 0:
       return '0 bytes';
     case 1:
-      return '1 byte';      
+      return '1 byte';
   }
 
   const sizes: string[] = ['bytes', 'KiB', 'MiB', 'GiB', 'TiB'];

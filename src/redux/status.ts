@@ -18,7 +18,7 @@ export interface ResetStatusPayload {
  * is being set.
  */
 export type ActionStatusHook<P = any> = (
-  status: ActionStatus, 
+  status: ActionStatus,
   action: Action,
   state: State
 ) => void;
@@ -33,9 +33,9 @@ export interface ActionStatus {
   timestamp: number;
 
   // any data from the execution of the last action.
-  // this data will only last within the state until 
+  // this data will only last within the state until
   // the next action is dispatched.
-  data: { [ key: string ]: any }  
+  data: { [ key: string ]: any }
 }
 
 export enum ActionResult {
@@ -50,7 +50,7 @@ export enum ActionResult {
 /**
  * Creates a RESET action to clear the action
  * status related to a particular action.
- * 
+ *
  * @param err            the error instance
  * @param relatedAction  the action that resulted in this action
  * @param message        a detailed error message
@@ -65,7 +65,7 @@ export function createResetStatusAction(
       actionStatus,
     },
     meta: {
-      timestamp: Date.now(),      
+      timestamp: Date.now(),
     }
   };
 
@@ -76,7 +76,7 @@ export function createResetStatusAction(
  * Sets the action status in the given state
  * instance. This function will also execute
  * the action hook if available.
- * 
+ *
  * @param state   the state to save the status in
  * @param result  the action result
  * @param action  the action that caused the state change
@@ -84,7 +84,7 @@ export function createResetStatusAction(
  * @param data    transient action data
  */
 export function setActionStatus<S extends State>(
-  state: S, 
+  state: S,
   action: Action,
   result: ActionResult,
   data: { [ key: string ]: any } = {}
@@ -104,8 +104,8 @@ export function setActionStatus<S extends State>(
     Logger.trace(setActionStatus.name, 'Calling status hook for action ', action.type);
     action.meta.statusHook(actionStatus, action, state);
   }
-  
-  // update status list with any 
+
+  // update status list with any
   // status with given type removed
   const updatedStatus = state.status.filter(
     status => status.actionType !== action.type
@@ -116,7 +116,7 @@ export function setActionStatus<S extends State>(
     return {
       ...state,
       status: updatedStatus
-    }  
+    }
   } else {
     // replace existing status
     return {
@@ -131,15 +131,15 @@ export function setActionStatus<S extends State>(
 
 /**
  * Reset the action status in the given state.
- * 
+ *
  * @param state   the state in which the status needs to be reset
  */
 export function resetActionStatus<S extends State>(
   actionType: string,
-  state: S, 
+  state: S,
 ): S {
 
-  // remove any action status 
+  // remove any action status
   // with give action type
   const status = state
     .status
@@ -154,12 +154,12 @@ export function resetActionStatus<S extends State>(
 }
 
 /**
- * Checks if any one of the action statuses 
+ * Checks if any one of the action statuses
  * in the state is in pending state
- * 
- * @param state        the state in which to do the status check 
- * @param actionTypes  the action types for which pending state 
- *                     should be checked. if not provided then 
+ *
+ * @param state        the state in which to do the status check
+ * @param actionTypes  the action types for which pending state
+ *                     should be checked. if not provided then
  *                     check will be done for any pending state.
  */
 export function isStatusPending<S extends State>(
@@ -167,8 +167,8 @@ export function isStatusPending<S extends State>(
   ...actionTypes: string[]
 ): boolean {
   return state.status.some(
-    status => 
-      status.result == ActionResult.pending && 
+    status =>
+      status.result == ActionResult.pending &&
       (actionTypes.length == 0 || actionTypes.some(type => status.actionType == type))
   );
 }
@@ -178,7 +178,7 @@ export function getLastStatus<S extends State>(
 ): ActionStatus {
   return state.status.reduce(
     (lastStatus, status) => {
-      if (!lastStatus || 
+      if (!lastStatus ||
         status.timestamp >= lastStatus.timestamp) {
         return status;
       } else {

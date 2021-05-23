@@ -109,9 +109,9 @@ it('crud persists to the underlying storage impl', async () => {
     await stg.flush();
     expect(storedValues!).toBeDefined();
     expect(equal(storedValues!, {
-      a: 11, 
+      a: 11,
       b: {
-        aa: 'AA', 
+        aa: 'AA',
         bb: 'BB'
       },
       c: 3,
@@ -124,9 +124,9 @@ it('crud persists to the underlying storage impl', async () => {
 
     await stg.flush();
     expect(equal(storedValues!, {
-      a: 11, 
+      a: 11,
       b: {
-        aa: 'AA', 
+        aa: 'AA',
         bb: 'BB'
       },
       d: 4,
@@ -208,7 +208,7 @@ it('triggers crud notifications', async () => {
       case NotificationType.Added: { ++anyAdded; break }
       case NotificationType.Modified: { ++anyModified; break }
       case NotificationType.Removed: { ++anyRemoved; break }
-    }    
+    }
   })
 
   try {

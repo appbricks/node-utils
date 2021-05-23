@@ -35,18 +35,18 @@ export interface ErrorPayload {
 };
 
 /**
- * Creates a redux action with a unique string 
+ * Creates a redux action with a unique string
  * type name with the given payload and intent
  * tag which uniquely associates the intention
  * of the user that resulted in this action.
- * 
+ *
  * @param type       a unique action type identifier
  * @param payload    the payload the action is associated with
  * @param intentTag  a unique intent tag
  */
 export function createAction<P>(
-  type: string, 
-  payload?: P, 
+  type: string,
+  payload?: P,
   intentTag?: string,
   statusHook?: ActionStatusHook<P | ErrorPayload>): Action<P> {
 
@@ -60,30 +60,30 @@ export function createAction<P>(
     }
   };
 
-  Logger.trace(createAction.name, 
+  Logger.trace(createAction.name,
     'Creating action', action)
 
   return action;
 }
 
 /**
- * Creates a redux action with a unique string 
+ * Creates a redux action with a unique string
  * type name with the given payload and intent
  * tag which uniquely associates the intention
  * of the user that resulted in this action.
  * This action will be the continuation of a
  * previous action and that is identified as
  * the 'relatedAction'.
- * 
+ *
  * @param relatedAction  the action that resulted in this action
  * @param type           a unique action type identifier
  * @param payload        the payload the action is associated with
  * @param intentTag      a unique intent tag
  */
 export function createFollowUpAction<P1, P2 = any>(
-  relatedAction: Action<P2>, 
-  type: string, 
-  payload?: P1, 
+  relatedAction: Action<P2>,
+  type: string,
+  payload?: P1,
   intentTag?: string,
   statusHook?: ActionStatusHook<P1 | ErrorPayload>): Action<P1> {
 
@@ -98,7 +98,7 @@ export function createFollowUpAction<P1, P2 = any>(
     }
   };
 
-  Logger.trace(createFollowUpAction.name, 
+  Logger.trace(createFollowUpAction.name,
     'Creating followup action', action)
 
   return action;
@@ -107,7 +107,7 @@ export function createFollowUpAction<P1, P2 = any>(
 /**
  * Creates a ERROR action with error details
  * and related action that had the error.
- * 
+ *
  * @param err            the error instance
  * @param relatedAction  the action that resulted in this action
  * @param message        a detailed error message
@@ -130,12 +130,12 @@ export function createErrorAction(
     }
   };
 
-  Logger.trace(createErrorAction.name, 
+  Logger.trace(createErrorAction.name,
     'Creating error action', action);
-  Logger.trace(createErrorAction.name, 
+  Logger.trace(createErrorAction.name,
     'Related action with error', relatedAction);
-  Logger.trace(createErrorAction.name, 
+  Logger.trace(createErrorAction.name,
     'Error being handled', err);
-    
+
   return action;
 }

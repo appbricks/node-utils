@@ -6,7 +6,7 @@ var loggerName: string;
 
 /**
  * Initializes the logging infrastructure
- * 
+ *
  * @param name   the name of this logger
  * @param level  the log level
  */
@@ -45,18 +45,18 @@ export function addConsoleLog(colorize = true) {
 }
 
 /**
- * Logger instance with an attached logging context. 
+ * Logger instance with an attached logging context.
  * This ensures the current source context is logged
  * with each message.
  */
 export class Logger {
-  
+
   name!: string;
 
   /**
-   * Constructs a logger with 
+   * Constructs a logger with
    * an instance association
-   * 
+   *
    * @param src  the logging source instance object or name
    */
   constructor(src: any) {
@@ -92,7 +92,7 @@ export class Logger {
   }
 
   private formatLog(message: string, meta: any[]): string {
-    
+
     var i: number;
     var msg = `${this.name}: ${message}`
 

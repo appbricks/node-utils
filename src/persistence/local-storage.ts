@@ -20,7 +20,7 @@ export interface StorageNotification {
 
 /**
  * Platform specific storage implementation
- * 
+ *
  * i.e. React Native AsyncStorage
  */
 export interface Storage {
@@ -67,7 +67,7 @@ export default class LocalStorage {
   }
 
   /**
-   * Synchronizes the in-memory LocalStorage with 
+   * Synchronizes the in-memory LocalStorage with
    * the platform's persisted storage value. Once
    * loaded all updates to the in-memory data will
    * be written to the platform's persisted storage
@@ -92,7 +92,7 @@ export default class LocalStorage {
   }
 
   /**
-   * @returns {boolean}  Returns if the store has been loaded 
+   * @returns {boolean}  Returns if the store has been loaded
    *                     from the persitance layer.
    */
   isInitialized() : boolean {
@@ -116,7 +116,7 @@ export default class LocalStorage {
 
   /**
    * Sends a notification for a key change.
-   * 
+   *
    * @param {string} key               the key to notify on
    * @param {string} value             the value of the key
    * @param {NotificationType} action  the notification action
@@ -150,13 +150,13 @@ export default class LocalStorage {
   }
 
   /**
-   * Ensures all changes have been persisted 
+   * Ensures all changes have been persisted
    * to the underlying storage implementation
    */
   async flush() {
     await this.queue;
   }
-  
+
   /**
    * Stores an item in the local storage
    *

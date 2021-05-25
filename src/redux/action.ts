@@ -1,4 +1,5 @@
 import * as redux from 'redux';
+import { v4 as uuidv4 } from 'uuid';
 
 import Logger from '../log/logger';
 
@@ -19,6 +20,7 @@ export const NOOP = 'NOOP';
 export interface Action<P = any> extends redux.Action<string> {
   payload?: P,
   meta: {
+    uuid: string
     timestamp: number
     intentTag?: string
     relatedAction?: Action
@@ -40,9 +42,10 @@ export interface ErrorPayload {
  * tag which uniquely associates the intention
  * of the user that resulted in this action.
  *
- * @param type       a unique action type identifier
- * @param payload    the payload the action is associated with
- * @param intentTag  a unique intent tag
+ * @param type        a unique action type identifier
+ * @param payload     the payload the action is associated with
+ * @param intentTag   a unique intent tag
+ * @param statusHook  a callback hook called when action result status is created
  */
 export function createAction<P>(
   type: string,
@@ -54,6 +57,7 @@ export function createAction<P>(
     type,
     payload,
     meta: {
+      uuid: uuidv4(),
       timestamp: Date.now(),
       intentTag,
       statusHook
@@ -91,6 +95,7 @@ export function createFollowUpAction<P1, P2 = any>(
     type,
     payload,
     meta: {
+      uuid: relatedAction.meta.uuid,
       timestamp: Date.now(),
       intentTag,
       relatedAction,
@@ -125,6 +130,7 @@ export function createErrorAction(
       message: message ? message : err.message || `${err}`
     },
     meta: {
+      uuid: relatedAction ? relatedAction.meta.uuid : uuidv4(),
       timestamp: Date.now(),
       relatedAction
     }

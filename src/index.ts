@@ -18,6 +18,17 @@ export { Logger,
 };
 
 import {
+  RESET_STATE,
+  State,
+  reducerDelegate
+} from './redux/state';
+export {
+  RESET_STATE,
+  State,
+  reducerDelegate
+};
+
+import {
   SUCCESS,
   ERROR,
   NOOP,
@@ -73,15 +84,6 @@ export {
   serviceEpic,
   serviceEpicFanOut,
   combineEpicsWithGlobalErrorHandler
-};
-
-import {
-  State,
-  reducerDelegate
-} from './redux/state';
-export {
-  State,
-  reducerDelegate
 };
 
 import LocalStorage, {

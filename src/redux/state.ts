@@ -15,6 +15,12 @@ import {
 } from './status';
 
 /**
+ * Reset state action type will reset
+ * the state to an initial state.
+ */
+ export const RESET_STATE = 'RESET_STATE';
+
+/**
  * Base State type
  */
 export interface State {
@@ -27,14 +33,19 @@ export interface State {
  *
  * @param state            the state to reduce
  * @param action           the action to handle
- * @param actionSet        set of service specific actions to filter on
- * @param delegateReducer  the reducer to delegate linked service SUCCESS actions
+ * @param actionSet        set of service specific actions 
+ *                         to filter on
+ * @param delegateReducer  the reducer to delegate linked 
+ *                         service SUCCESS actions
+ * @param resetState       the state to reset state to when
+ *                         a RESET_STATE action is received
  */
 export function reducerDelegate<S extends State, P = any>(
   state: S,
   action: Action,
   actionSet: Set<string>,
   delegateReducer: Reducer<S, P>,
+  resetState?: () => S
 ): S {
 
   const relatedAction = action.meta && action.meta.relatedAction!;
@@ -97,6 +108,12 @@ export function reducerDelegate<S extends State, P = any>(
           actionStatusMetaType,
           state
         );
+      }
+      break;
+    }
+    case RESET_STATE: {
+      if (resetState) {
+        return resetState();
       }
       break;
     }

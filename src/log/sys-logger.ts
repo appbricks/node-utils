@@ -2,7 +2,7 @@ import winston from 'winston';
 
 export declare var logger: winston.Logger;
 
-var loggerName: string;
+var _formatLogLine = false
 
 /**
  * Initializes the logging infrastructure
@@ -12,33 +12,47 @@ var loggerName: string;
  */
 export function initLogger(name: string, level: string) {
 
-  loggerName = name
-
   logger = winston.createLogger({
     level: level,
+    format: winston.format.combine(
+      winston.format.timestamp(),
+      winston.format.label({
+        label: name
+      }),
+    )
   });
 }
 
 /**
  * Sends log messages to the console.
+ * 
+ * @param unstructured is set to true then logs are written as a
+ *                     human readable line format instead of JSON
  */
-export function addConsoleLog(colorize = true) {
+export function addConsoleLog(unstructured = false) {
   if (logger) {
-    logger.add(
-      new winston.transports.Console({
-        format: winston.format.combine(
-          winston.format.colorize({
-            all: colorize
-          }),
-          winston.format.label({
-            label: loggerName
-          }),
-          winston.format.printf(
-            info => `${new Date().toISOString()} ${info.level}${' '.repeat(15 - info.level.length)} [${info.label}] ${info.message}`
+    if (unstructured) {
+      logger.add(
+        new winston.transports.Console({
+          format: winston.format.combine(
+            winston.format.colorize({
+              all: true
+            }),
+            winston.format.printf(
+              info => `${info.timestamp} ${info.level} [${info.label}] ${info.message}`
+            )
           )
-        )
-      })
-    );
+        })
+      );
+      _formatLogLine = true
+
+    } else {
+      logger.add(
+        new winston.transports.Console({
+          format: winston.format.json()
+        })
+      ); 
+    }
   } else {
     throw('logger has not been initialized');
   }
@@ -69,43 +83,80 @@ export class Logger {
 
   error(message: string, ...meta: any[]) {
     if (logger.levels['error'] <= logger.levels[logger.level]) {
-      logger.error(this.formatLog(message, meta));
+      if (_formatLogLine) {
+        logger.error(this.formatLogLine(message, meta));  
+      } else {
+        var { msg, data } = this.formatLogMetadata(message, meta)
+        logger.error(msg, data);
+      }
     }
   }
 
   warn(message: string, ...meta: any[]) {
     if (logger.levels['warn'] <= logger.levels[logger.level]) {
-      logger.warn(this.formatLog(message, meta));
+      if (_formatLogLine) {
+        logger.warn(this.formatLogLine(message, meta));  
+      } else {
+        var { msg, data } = this.formatLogMetadata(message, meta)
+        logger.warn(msg, data);
+      }
     }
   }
 
   info(message: string, ...meta: any[]) {
     if (logger.levels['info'] <= logger.levels[logger.level]) {
-      logger.info(this.formatLog(message, meta));
+      if (_formatLogLine) {
+        logger.info(this.formatLogLine(message, meta));  
+      } else {
+        var { msg, data } = this.formatLogMetadata(message, meta)
+        logger.info(msg, data);
+      }
     }
   }
 
   debug(message: string, ...meta: any[]) {
     if (logger.levels['debug'] <= logger.levels[logger.level]) {
-      logger.debug(this.formatLog(message, meta));
+      if (_formatLogLine) {
+        logger.debug(this.formatLogLine(message, meta));  
+      } else {
+        var { msg, data } = this.formatLogMetadata(message, meta)
+        logger.debug(msg, data);
+      }
     }
   }
 
-  private formatLog(message: string, meta: any[]): string {
+  private formatLogLine(message: string, meta: any[]): string {
 
-    var i: number;
-    var msg = `${this.name}: ${message}`
+    var msg = `${this.name}: ${message}`;
+    var data = {}
 
-    for (i = 0; i < meta.length; i++) {
-      msg += i == 0 ? ': ' : '; '
-
+    for (var i = 0; i < meta.length; i++) {
       let m = meta[i]
       if (m instanceof Object) {
-        msg += JSON.stringify(m, null, 2)
+        Object.assign(data, m)
       } else {
-        msg += m
+        msg += (i == 0 ? ': ' : '; ') + m;
       }
     }
-    return msg
+    if (Object.keys(data).length) {
+      msg += "\n" + JSON.stringify(data, null, 2);
+    }
+    return msg;
+  }
+
+  private formatLogMetadata(message: string, meta: any[]): { msg: string, data: any } {
+
+    var msg = message;
+    var data: any = { name: this.name, logdata: {} }
+
+    for (var i = 0; i < meta.length; i++) {
+      let m = meta[i]
+      if (m instanceof Object) {
+        Object.assign(data.logdata, m)
+      } else {
+        msg += (i == 0 ? ': ' : '; ') + m
+      }
+    }
+    return { msg, data }
   }
 }

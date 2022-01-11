@@ -1,6 +1,16 @@
 import * as redux from 'redux';
-import { Observable, of, from, concat } from 'rxjs';
-import { mergeMap, catchError } from 'rxjs/operators'
+import { 
+  Observable, 
+  asyncScheduler,
+  of, 
+  from, 
+  concat 
+} from 'rxjs';
+import { 
+  mergeMap, 
+  catchError,
+  observeOn
+} from 'rxjs/operators'
 import {
   Epic,
   ActionsObservable,
@@ -11,7 +21,11 @@ import {
 
 import Logger from '../log/logger';
 
-import { Action, createErrorAction } from './action';
+import { 
+  Action, 
+  createErrorAction, 
+  ErrorPayload 
+} from './action';
 
 /**
  * Service Abstraction
@@ -66,7 +80,7 @@ export default abstract class Service<S = any, P = any, St = any, Sp = any, Dp =
 }
 
 /**
- * Returns a Epic to map an action of
+ * Returns an Epic that maps an action of
  * a given type to a service callback.
  *
  * @param type            the request action type
@@ -90,11 +104,13 @@ export function serviceEpic<P, S>(
 }
 
 /**
- * Returns a Epic to map an action of
+ * Returns an Epic that maps an action of
  * a given type to multiple service actions.
  *
  * @param type             the request action type
  * @param serviceApiCalls  list of service API invocation callbacks
+ * @param sync             Wait until all calls complete before 
+ *                         dispatching response actions
  */
 export function serviceEpicFanOut<P, S>(
   type: string,
@@ -105,7 +121,8 @@ export function serviceEpicFanOut<P, S>(
       // executed service API call promises that can be waited on
       callSync: { [name: string]: Promise<Action> }
     ) => Promise<Action>
-  }
+  },
+  sync?: boolean
 ): Epic {
 
   // save action in flight for inclusion
@@ -127,7 +144,75 @@ export function serviceEpicFanOut<P, S>(
         callQueue.push(callPromise);
       }
 
-      return concat(...callQueue.map(p => from(p)));
+      if (sync) {
+        return concat(...callQueue.map(p => from(p)));
+
+      } else {
+        return new Observable<Action>(observer => {
+          callQueue.forEach(callPromise => {
+            callPromise
+              .then(respAction => observer.next(respAction))
+              .catch(error => observer.next(createErrorAction(error, action)))
+          });        
+        }).pipe(
+          observeOn(asyncScheduler)
+        );  
+      }
+    }),
+    catchError(err =>
+      of(createErrorAction(err, actionInFlight))
+    )
+  );
+}
+
+/**
+ * Returns an Epic to map an action of
+ * a given type to a service subscription.
+ *
+ * @param type            the request action type
+ * @param serviceApiCall  the service API invocation callback
+ */
+ export function serviceEpicSubscription<P, U, S>(
+  type: string,
+  serviceApiCall: (
+    action: Action<P>, 
+    state: StateObservable<S>, 
+    update: (actionUpdate?: Action<U>, done?: boolean) => void, // subscription update callback
+    error: (actionError: Action<ErrorPayload>) => void,         // subscription error callback
+  ) => (Promise<Action<any>>)
+): Epic {
+
+  // save action in flight for inclusion
+  // with error handling
+  var actionInFlight: Action<P>;
+
+  return (action$: ActionsObservable<Action<P>>, state$: StateObservable<S>) => action$.pipe(
+    ofType(type),
+    mergeMap(action => {
+      actionInFlight = action;
+
+      return new Observable<Action<P|U|ErrorPayload>>(observer => {
+        serviceApiCall(action, state$, 
+          (actionUpdate?: Action<U>, done?: boolean) => {
+            if (action) {
+              observer.next(actionUpdate);
+            }
+            if (!action || done) {
+              observer.complete();
+            }
+          },
+          (actionError: Action<ErrorPayload>) => {
+            // resubscribe to stream
+            observer.next(action);
+            observer.next(actionError);
+            observer.complete();
+          },
+        )
+          .then(action => observer.next(action))
+          .catch(error => observer.next(createErrorAction(error, action)))
+      }).pipe(
+        observeOn(asyncScheduler)
+      );
     }),
     catchError(err =>
       of(createErrorAction(err, actionInFlight))

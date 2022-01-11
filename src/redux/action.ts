@@ -33,7 +33,8 @@ export interface Action<P = any> extends redux.Action<string> {
  */
 export interface ErrorPayload {
   err: Error,
-  message: string
+  message: string,
+  errData?: {[key: string]: any}
 };
 
 /**
@@ -120,14 +121,16 @@ export function createFollowUpAction<P1, P2 = any>(
 export function createErrorAction(
   err: Error | any,
   relatedAction?: Action<any>,
-  message?: string
+  message?: string,
+  errData?: {[key: string]: any}
 ): Action<ErrorPayload> {
 
   let action: Action<ErrorPayload> = {
     type: ERROR,
     payload: {
       err: err instanceof Error ? err : new Error(err),
-      message: message ? message : err.message || `${err}`
+      message: message ? message : err.message || `${err}`,
+      errData
     },
     meta: {
       uuid: relatedAction ? relatedAction.meta.uuid : uuidv4(),

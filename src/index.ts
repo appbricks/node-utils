@@ -17,75 +17,6 @@ export { Logger,
   reduxLogger
 };
 
-import {
-  RESET_STATE,
-  State,
-  reducerDelegate
-} from './redux/state';
-export {
-  RESET_STATE,
-  State,
-  reducerDelegate
-};
-
-import {
-  SUCCESS,
-  ERROR,
-  NOOP,
-  Action,
-  ErrorPayload,
-  createAction,
-  createFollowUpAction,
-  createErrorAction
-} from './redux/action';
-export {
-  SUCCESS,
-  ERROR,
-  NOOP,
-  Action,
-  ErrorPayload,
-  createAction,
-  createFollowUpAction,
-  createErrorAction
-};
-
-import {
-  RESET_STATUS,
-  ResetStatusPayload,
-  ActionStatus,
-  ActionResult,
-  createResetStatusAction,
-  setActionStatus,
-  resetActionStatus,
-  isStatusPending,
-  getLastStatus,
-  ActionStatusTracker
-} from './redux/status';
-export {
-  RESET_STATUS,
-  ResetStatusPayload,
-  ActionStatus,
-  ActionResult,
-  createResetStatusAction,
-  setActionStatus,
-  resetActionStatus,
-  isStatusPending,
-  getLastStatus,
-  ActionStatusTracker
-};
-
-import Service, {
-  serviceEpic,
-  serviceEpicFanOut,
-  combineEpicsWithGlobalErrorHandler
-} from './redux/service';
-export {
-  Service,
-  serviceEpic,
-  serviceEpicFanOut,
-  combineEpicsWithGlobalErrorHandler
-};
-
 import LocalStorage, {
   Storage,
   setLocalStorageImpl
@@ -95,8 +26,13 @@ export { LocalStorage, Storage, setLocalStorageImpl };
 import Error from './utility/error';
 export { Error };
 
-export { sleep, execAfter } from './utility/timer';
-export { functionKey } from './utility/function';
-export { combineProps } from './utility/object';
-export { hexToRgba } from './utility/color';
-export { bytesToSize } from './utility/format';
+export * from './redux/state';
+export * from './redux/action';
+export * from './redux/status';
+export * from './redux/service';
+export * from './utility/timer';
+export * from './utility/function';
+export * from './utility/object';
+export * from './utility/color';
+export * from './utility/format';
+export * from './utility/collections';

@@ -86,7 +86,7 @@ export default abstract class Service<S = any, P = any, St = any, Sp = any, Dp =
  * @param type            the request action type
  * @param serviceApiCall  the service API invocation callback
  */
-export function serviceEpic<P, S>(
+export function serviceEpic<P, S = any>(
   type: string,
   serviceApiCall: (action: Action<P>, state: StateObservable<S>) => Promise<Action<any>>
 ): Epic {
@@ -112,7 +112,7 @@ export function serviceEpic<P, S>(
  * @param sync             Wait until all calls complete before 
  *                         dispatching response actions
  */
-export function serviceEpicFanOut<P, S>(
+export function serviceEpicFanOut<P, S = any>(
   type: string,
   serviceApiCallMap: {
     [name: string]: (
@@ -172,7 +172,7 @@ export function serviceEpicFanOut<P, S>(
  * @param type            the request action type
  * @param serviceApiCall  the service API invocation callback
  */
- export function serviceEpicSubscription<P, U, S>(
+ export function serviceEpicSubscription<P, U, S = any>(
   type: string,
   serviceApiCall: (
     action: Action<P>, 
@@ -194,10 +194,10 @@ export function serviceEpicFanOut<P, S>(
       return new Observable<Action<P|U|ErrorPayload>>(observer => {
         serviceApiCall(action, state$, 
           (actionUpdate?: Action<U>, done?: boolean) => {
-            if (action) {
+            if (actionUpdate) {
               observer.next(actionUpdate);
             }
-            if (!action || done) {
+            if (!actionUpdate || done) {
               observer.complete();
             }
           },

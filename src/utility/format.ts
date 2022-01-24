@@ -22,3 +22,16 @@ export function bytesToSize(bytes: number): string {
     return `${(bytes / Math.pow(1024, i)).toFixed(1)} ${sizes[i]}`;
   }
 }
+
+/**
+ * Format the given date time instance to the current locale.
+ * 
+ * @param dateTime  date time instance to format
+ * @param is24hr    whether to format as 24 hr (default is true)
+ * 
+ * @returns the date time instance formatted as a string
+ */
+export function dateTimeToLocale(dateTime: Date, is24hr = true): string {
+  return dateTime.toLocaleDateString() + ' ' +
+    dateTime.toLocaleTimeString('en-US', { hour12: false, timeZoneName: 'short' })
+}

@@ -76,6 +76,20 @@ export default class LocalStorage {
   async init() {
     await this.queue;
 
+    if (!LocalStorage.localStorageImpl) {
+      this.logger.warn('Platform specific persistent local storage implementation has not been set. Falling back to using in-memory ephemeral storage.');
+
+      const store: { [key: string]: any } = {};
+      LocalStorage.localStorageImpl = {
+        async setItem(key: string, value: string): Promise<void> {
+          store[key] = value;
+        },
+        async getItem(key: string): Promise<string | null | undefined> {
+          return store[key];
+        }
+      }
+    }
+
     if (!this.data) {
       this.logger.trace('Loading data from local storage implementation');
 

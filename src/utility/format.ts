@@ -33,5 +33,5 @@ export function bytesToSize(bytes: number): string {
  */
 export function dateTimeToLocale(dateTime: Date, is24hr = true): string {
   return dateTime.toLocaleDateString() + ' ' +
-    dateTime.toLocaleTimeString('en-US', { hour12: false, timeZoneName: 'short' })
+    dateTime.toLocaleTimeString('en-US', { hour12: is24hr, timeZoneName: 'short' })
 }

@@ -148,3 +148,27 @@ export function createErrorAction(
 
   return action;
 }
+
+/**
+ * Helper function for service API calls to handle a 
+ * success action that has another action side-effect
+ * 
+ * @param actionServiceCall  service call returning the action to check for success
+ * @param successAction      the action side effect
+ * 
+ * @returns the action side effect or NOOP if the 
+ *          result of the service call was not a 
+ *          SUCCESS or an error occurred
+ */
+export async function onSuccessAction(actionServiceCall: Promise<Action>, successAction: Action): Promise<Action> {
+  try {
+    let dependsAction = await actionServiceCall;
+    if (dependsAction.type == SUCCESS) {
+      return successAction;
+    }
+  } catch (error) {
+    // ignore callSync error as this 
+    // would have already been handled
+  }
+  return createAction(NOOP);
+}

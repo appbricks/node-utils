@@ -129,7 +129,7 @@ export function createErrorAction(
     type: ERROR,
     payload: {
       err: err instanceof Error ? err : new Error(err),
-      message: message ? message : err.message || `${err}`,
+      message: message ? message : err.message || JSON.stringify(err),
       errData
     },
     meta: {

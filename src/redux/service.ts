@@ -27,6 +27,8 @@ import {
   ErrorPayload 
 } from './action';
 
+// AppSync subscritption error
+
 /**
  * Service Abstraction
  *
@@ -169,17 +171,19 @@ export function serviceEpicFanOut<P, S = any>(
  * Returns an Epic to map an action of
  * a given type to a service subscription.
  *
- * @param type            the request action type
- * @param serviceApiCall  the service API invocation callback
+ * @param type                the request action type
+ * @param serviceApiCall      the service API invocation callback
+ * @param subTermErrorPattern error pattern that will terminate re-suscription
  */
- export function serviceEpicSubscription<P, U, S = any>(
+export function serviceEpicSubscription<P, U, S = any>(
   type: string,
   serviceApiCall: (
     action: Action<P>, 
     state: StateObservable<S>, 
     update: (actionUpdate?: Action<U>, done?: boolean) => void, // subscription update callback
     error: (actionError: Action<ErrorPayload>) => void,         // subscription error callback
-  ) => (Promise<Action<any>>)
+  ) => (Promise<Action<any>>),
+  subTermErrorPattern?: RegExp
 ): Epic {
 
   // save action in flight for inclusion
@@ -202,8 +206,16 @@ export function serviceEpicFanOut<P, S = any>(
             }
           },
           (actionError: Action<ErrorPayload>) => {
-            // resubscribe to stream
-            observer.next(action);
+            let errMsg = actionError.payload?.message;
+            if (!errMsg 
+              || !subTermErrorPattern
+              || !subTermErrorPattern.test(errMsg)) {
+              // resubscribe to stream
+              observer.next(action);
+            } else {
+              Logger.error(serviceEpicSubscription.name,
+                'Skipping re-subscribe on error as fatal subscription error detected.');
+            }
             observer.next(actionError);
             observer.complete();
           },

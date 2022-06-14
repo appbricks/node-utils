@@ -9,6 +9,7 @@ import { ActionStatusHook } from './status';
  * Common action types
  */
 
+export const BROADCAST = 'BROADCAST';
 export const SUCCESS = 'SUCCESS';
 export const ERROR = 'ERROR';
 export const NOOP = 'NOOP';
@@ -26,6 +27,15 @@ export interface Action<P = any> extends redux.Action<string> {
     relatedAction?: Action
     statusHook?: ActionStatusHook
   }
+};
+
+/**
+ * Broadcast payload - the payload has the 
+ * same structure as a graphql type
+ */
+export interface BroadCastPayload {
+  [key: string]: any
+  __typename: string
 };
 
 /**

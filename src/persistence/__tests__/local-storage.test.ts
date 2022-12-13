@@ -64,6 +64,7 @@ it('propagates an error from the underlying storage impl when persisting the dat
   try {
     // first queued save should have failed
     let v = await stg.setItem('b', '2');
+    fail('expected setItem to fail')
   } catch (err) {
     expect(err).toEqual('setItem error');
   }

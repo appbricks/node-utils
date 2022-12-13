@@ -13,7 +13,6 @@ import {
 } from 'rxjs/operators'
 import {
   Epic,
-  ActionsObservable,
   StateObservable,
   ofType,
   combineEpics
@@ -93,7 +92,7 @@ export function serviceEpic<P, S = any>(
   serviceApiCall: (action: Action<P>, state: StateObservable<S>) => Promise<Action<any>>
 ): Epic {
 
-  return (action$: ActionsObservable<Action<P>>, state$: StateObservable<S>) => action$.pipe(
+  return (action$: Observable<Action<P>>, state$: StateObservable<S>) => action$.pipe(
     ofType(type),
     mergeMap(async action => {
       try {
@@ -190,7 +189,7 @@ export function serviceEpicSubscription<P, U, S = any>(
   // with error handling
   var actionInFlight: Action<P>;
 
-  return (action$: ActionsObservable<Action<P>>, state$: StateObservable<S>) => action$.pipe(
+  return (action$: Observable<Action<P>>, state$: StateObservable<S>) => action$.pipe(
     ofType(type),
     mergeMap(action => {
       actionInFlight = action;
@@ -245,9 +244,9 @@ export function serviceEpicSubscription<P, U, S = any>(
 export function combineEpicsWithGlobalErrorHandler(
   epics: Epic[],
   errorHandler?: (error: any, source: any) => void
-): (action$: ActionsObservable<redux.Action>, state$: StateObservable<any>, dependencies: any) => Observable<redux.Action> {
+): (action$: Observable<redux.Action>, state$: StateObservable<any>, dependencies: any) => Observable<redux.Action> {
 
-  return (action$: ActionsObservable<redux.Action>, state$: StateObservable<any>, dependencies: any): Observable<redux.Action> =>
+  return (action$: Observable<redux.Action>, state$: StateObservable<any>, dependencies: any): Observable<redux.Action> =>
     combineEpics(...epics)(action$, state$, dependencies).pipe(
       catchError((error, source) => {
 

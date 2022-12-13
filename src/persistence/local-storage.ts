@@ -178,14 +178,14 @@ export default class LocalStorage {
    * @param {any} value   the value to set
    * @returns {any}       the previous value if any
    */
-  setItem(key: string, value: any): Promise<any> {
+  async setItem(key: string, value: any): Promise<any> {
     var oldValue = this.data![key]
     if (equal(oldValue, value)) {
       this._sendNotifications(key, value, NotificationType.Unchanged);
     } else {
       this.data![key] = value;
       this._sendNotifications(key, value, !oldValue ? NotificationType.Added : NotificationType.Modified);
-      this._persist();
+      await this._persist();
     }
     return oldValue;
   }
